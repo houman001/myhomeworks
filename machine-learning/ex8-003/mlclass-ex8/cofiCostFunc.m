@@ -17,42 +17,25 @@ J = 0;
 X_grad = zeros(size(X));
 Theta_grad = zeros(size(Theta));
 
-% ====================== YOUR CODE HERE ======================
-% Instructions: Compute the cost function and gradient for collaborative
-%               filtering. Concretely, you should first implement the cost
-%               function (without regularization) and make sure it is
-%               matches our costs. After that, you should implement the 
-%               gradient and use the checkCostFunction routine to check
-%               that the gradient is correct. Finally, you should implement
-%               regularization.
-%
-% Notes: X - num_movies  x num_features matrix of movie features
-%        Theta - num_users  x num_features matrix of user features
-%        Y - num_movies x num_users matrix of user ratings of movies
-%        R - num_movies x num_users matrix, where R(i, j) = 1 if the 
-%            i-th movie was rated by the j-th user
-%
-% You should set the following variables correctly:
-%
-%        X_grad - num_movies x num_features matrix, containing the 
-%                 partial derivatives w.r.t. to each element of X
-%        Theta_grad - num_users x num_features matrix, containing the 
-%                     partial derivatives w.r.t. to each element of Theta
-%
 
+% disp('X'), disp(X);
+% disp('Theta'), disp(Theta);
+% disp('Y'), disp(Y);
 
+DX = X * Theta' - Y;
+DXR = DX .* R;
+% disp('DX'), disp(DX);
+J = sum(sum(DXR .* DXR)) / 2;
 
+reg_theta = sum(sum(Theta * Theta' .* eye(size(Theta, 1), size(Theta, 1)))) * lambda / 2;
+reg_x = sum(sum(X * X' .* eye(size(X, 1), size(X, 1)))) * lambda / 2;
+J = J + reg_theta + reg_x;
 
+X_grad = DXR * Theta;
+Theta_grad = DXR' * X;
 
-
-
-
-
-
-
-
-
-
+X_grad = X_grad + lambda * X;
+Theta_grad = Theta_grad + lambda * Theta;
 
 
 % =============================================================
