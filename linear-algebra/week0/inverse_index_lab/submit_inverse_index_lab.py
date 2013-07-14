@@ -112,7 +112,7 @@ submit_url    = 'https://class.coursera.org/%s/assignment/submit'    % URL
 def submit():   
     print('==\n== Submitting Solutions \n==\n')
     
-    (login, password) = loginPrompt()
+    (login, password) = ('houman001@gmail.com', 'seCcCYuE46')
     if not login:
         print('!! Submission Cancelled')
         return
