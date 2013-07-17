@@ -5,17 +5,24 @@
 
 
 ## Problem 1
-def myFilter(L, num): pass
+def myFilter(L, num): 
+    return [l for l in L if (l % num) != 0 ]
 
+print(str(myFilter([1, 2, 3, 4, 5, 6, 7], 2)))
 
 
 ## Problem 2
-def myLists(L): pass
+def myLists(L):
+    return [[l + 1 for l in range(x)] for x in L]
 
+print(str(myLists([1, 4, 6])))
 
 
 ## Problem 3
-def myFunctionComposition(f, g): pass
+def myFunctionComposition(f, g): 
+    return { x:g[f[x]] for x in f.keys() }
+
+print(str(myFunctionComposition({0:'a', 1:'b'}, {'a':'apple', 'b':'banana'})))
 
 
 ## Problem 4
