@@ -23,11 +23,11 @@ def makeInverseIndex(strlist):
       or stories_big.txt included in the download.
     """
     d = [ (x, y) for (x, y) in list(enumerate(ss.split() for ss in strlist)) ]
-    print(str(d))
+#     print(str(d))
     t = [ dict(zip(y, [x] * len(y))) for (x, y) in d ]
-    print(str(t))
+#     print(str(t))
     w = list(set(sum(list(b for a,b in d),[])))
-    print(str(w))
+#     print(str(w))
     p = { word:{ item for item in { dictInst[word] if word in dictInst else None for dictInst in t } if item != None } for word in w }
     return p
 
@@ -47,7 +47,7 @@ def andSearch(inverseIndex, query):
     Output: the set of all document ids that contain _all_ of the specified words
     """
     c = [ (y, 1) for q in query for y in inverseIndex[q]]
-    return { x for x,u in [ (x,sum([y for v,y in c if v == x])) for x,z in c ]  if u == len(query)}
+    return set(x for x,u in [ (x,sum([y for v,y in c if v == x])) for x,z in c ]  if u == len(query))
 
 # ridx = makeInverseIndex(['a b c', 'a c d', 'b c a', 'x c b'])
 # print(str(ridx))
