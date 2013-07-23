@@ -1,7 +1,6 @@
 # Please fill out this stencil and submit using the provided submission script.
 
 from GF2 import one
-from math import pow
 from itertools import combinations
 from math import sqrt
 from plotting import plot
@@ -81,7 +80,7 @@ v_0100010 = findExpected(z, all_gf2s, [0, one, 0, 0, 0, one, 0])
 def dotProduct(a, b):
      return sum([v * u for (u, v) in zip(a, b)])
  
-print(str(dotProduct([1, 0], [5, 4321])))
+#print(str(dotProduct([1, 0], [5, 4321])))
  
 uv_a = dotProduct([1, 0], [5, 4321])
 uv_b = dotProduct([0, 1], [12345, 6])
@@ -108,5 +107,5 @@ def plotLine(p1, p2, points):
     plot(points)
     pass
 
-plotLine((-1.5, 2), (3, 0), 20)
-plotLine((2, 1), (-2, 2), 100)
+#plotLine((-1.5, 2), (3, 0), 20)
+#plotLine((2, 1), (-2, 2), 100)
