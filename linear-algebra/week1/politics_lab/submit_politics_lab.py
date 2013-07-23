@@ -118,9 +118,9 @@ def submit(parts_string, login, password):
     print('= Coding the Matrix Homework and Lab Submission')
     
     if not login:
-        login = login_prompt()
+        login = 'houman001@gmail.com'
     if not password:
-        password = password_prompt()
+        password = 'seCcCYuE46'
     if not parts_string: 
         parts_string = parts_prompt()
 

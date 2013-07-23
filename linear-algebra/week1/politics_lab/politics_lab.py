@@ -3,6 +3,7 @@ voting_data = list(open("voting_record_dump109.txt"))
 ## Task 1
 
 def create_voting_dict():
+    return {rowList[0]:[int(vote) for vote in rowList[3:]] for rowList in [row.split() for row in voting_data]}
     """
     Input: None (use voting_data above)
     Output: A dictionary that maps the last name of a senator
@@ -28,9 +29,7 @@ def create_voting_dict():
 
     The lists for each senator should preserve the order listed in voting data. 
     """
-    return dict() 
     
-
 ## Task 2
 
 def policy_compare(sen_a, sen_b, voting_dict):
@@ -102,9 +101,9 @@ def find_average_similarity(sen, sen_set, voting_dict):
         >>> find_average_similarity('Klein', {'Fox-Epstein','Ravella'}, vd)
         -0.5
     """
-    return ...
+    return 0
 
-most_average_Democrat = ... # give the last name (or code that computes the last name)
+most_average_Democrat = 0 # give the last name (or code that computes the last name)
 
 
 # Task 7
@@ -119,9 +118,9 @@ def find_average_record(sen_set, voting_dict):
         >>> find_average_record({'Fox-Epstein','Ravella'}, voting_dict)
         [-0.5, -0.5, 0.0]
     """
-    return ...
+    return 0
 
-average_Democrat_record = ... # (give the vector)
+average_Democrat_record = 0 # (give the vector)
 
 
 # Task 8
@@ -137,5 +136,5 @@ def bitter_rivals(voting_dict):
         >>> bitter_rivals(voting_dict)
         ('Fox-Epstein', 'Ravella')
     """
-    return (..., ...)
+    return (0, 0)
 
