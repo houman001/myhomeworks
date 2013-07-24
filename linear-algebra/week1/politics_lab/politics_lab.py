@@ -1,9 +1,10 @@
+from vec import Vec
+
 voting_data = list(open("voting_record_dump109.txt"))
 
 ## Task 1
 
 def create_voting_dict():
-    return {rowList[0]:[int(vote) for vote in rowList[3:]] for rowList in [row.split() for row in voting_data]}
     """
     Input: None (use voting_data above)
     Output: A dictionary that maps the last name of a senator
@@ -29,6 +30,14 @@ def create_voting_dict():
 
     The lists for each senator should preserve the order listed in voting data. 
     """
+    return {rowList[0]:[int(vote) for vote in rowList[3:]] for rowList in [row.split() for row in voting_data]}
+    
+def create_senator_affiliations():
+    return {rowList[0]:rowList[1] for rowList in [row.split() for row in voting_data]}
+
+voting_dict = create_voting_dict()
+#print(voting_dict.keys())
+
     
 ## Task 2
 
@@ -43,8 +52,12 @@ def policy_compare(sen_a, sen_b, voting_dict):
         >>> policy_compare('Fox-Epstein','Ravella', voting_dict)
         -2
     """
-    return 0.0
+    domain = range(len(voting_dict[sen_a]))
+    sen_a_vec = Vec(domain, {topic:vote for (topic, vote) in zip(domain, voting_dict[sen_a])})
+    sen_b_vec = Vec(domain, {topic:vote for (topic, vote) in zip(domain, voting_dict[sen_b])})
+    return sen_a_vec * sen_b_vec
 
+#print('policy_compare: ' + str(policy_compare('Obama', 'McCain', voting_dict)))
 
 ## Task 3
 
@@ -62,9 +75,8 @@ def most_similar(sen, voting_dict):
 
     Note that you can (and are encouraged to) re-use you policy_compare procedure.
     """
-    
-    return ""
-    
+    allRecords = {eachsen:policy_compare(sen, eachsen, voting_dict) for eachsen in [key for key in voting_dict.keys() if key != sen]}
+    return max([(value, key) for key, value in allRecords.items()])[1]
 
 ## Task 4
 
@@ -79,14 +91,15 @@ def least_similar(sen, voting_dict):
         >>> least_similar('Klein', vd)
         'Ravella'
     """
-    return ""
-    
+    allRecords = {eachsen:policy_compare(sen, eachsen, voting_dict) for eachsen in [key for key in voting_dict.keys() if key != sen]}
+    return min([(value, key) for key, value in allRecords.items()])[1]
     
 
 ## Task 5
 
-most_like_chafee    = ''
-least_like_santorum = '' 
+
+most_like_chafee    = most_similar('Chafee', voting_dict)
+least_like_santorum = least_similar('Santorum', voting_dict)
 
 
 
@@ -101,9 +114,17 @@ def find_average_similarity(sen, sen_set, voting_dict):
         >>> find_average_similarity('Klein', {'Fox-Epstein','Ravella'}, vd)
         -0.5
     """
-    return 0
+    return sum([policy_compare(sen, eachsen, voting_dict) for eachsen in sen_set]) / len(sen_set)
 
-most_average_Democrat = 0 # give the last name (or code that computes the last name)
+affiliations = create_senator_affiliations()
+democrats = {key for key, value in affiliations.items() if value == 'D'}
+#print(affiliations)
+#print(democrats)
+democrats_average_similarity = {sen:find_average_similarity(sen, democrats, voting_dict) for sen in democrats}
+#print(democrats_average_similarity)
+#print(max([(value, key) for key, value in democrats_average_similarity.items()])[1])
+
+most_average_Democrat = max([(value, key) for key, value in democrats_average_similarity.items()])[1]
 
 
 # Task 7
@@ -118,9 +139,21 @@ def find_average_record(sen_set, voting_dict):
         >>> find_average_record({'Fox-Epstein','Ravella'}, voting_dict)
         [-0.5, -0.5, 0.0]
     """
-    return 0
+    domain = range(len([value for key, value in voting_dict.items()][0]))
+#    print('domain: ' + str(domain))
+    total_vec = Vec(domain, {topic:0 for topic in domain})
+    for sen in sen_set:
+        sen_vec = Vec(domain, {topic:vote for (topic, vote) in zip(domain, voting_dict[sen])})
+        total_vec = total_vec + sen_vec
+#    print('total_vec: ' + str(total_vec))
+    total_vec = (1 / float(len(sen_set))) * total_vec
+#    print('average: ' + str([total_vec.f[d] for d in domain]))
+    return [total_vec.f[d] for d in domain]
+#    return [int(round(total_vec.f[d])) for d in domain]
 
-average_Democrat_record = 0 # (give the vector)
+
+average_Democrat_record = find_average_record(democrats, voting_dict)
+#print(average_Democrat_record)
 
 
 # Task 8
@@ -136,5 +169,6 @@ def bitter_rivals(voting_dict):
         >>> bitter_rivals(voting_dict)
         ('Fox-Epstein', 'Ravella')
     """
+        
     return (0, 0)
 
