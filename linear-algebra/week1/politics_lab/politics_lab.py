@@ -1,6 +1,6 @@
 from vec import Vec
 
-voting_data = list(open("voting_record_dump109.txt"))
+voting_data = list(open("/Users/houman001/workspace/myhomeworks/linear-algebra/week1/politics_lab/voting_record_dump109.txt"))
 
 ## Task 1
 
@@ -36,7 +36,7 @@ def create_senator_affiliations():
     return {rowList[0]:rowList[1] for rowList in [row.split() for row in voting_data]}
 
 voting_dict = create_voting_dict()
-#print(voting_dict.keys())
+# print(voting_dict.keys())
 
     
 ## Task 2
@@ -118,11 +118,8 @@ def find_average_similarity(sen, sen_set, voting_dict):
 
 affiliations = create_senator_affiliations()
 democrats = {key for key, value in affiliations.items() if value == 'D'}
-#print(affiliations)
-#print(democrats)
+# print('Democrats: ' + str(democrats))
 democrats_average_similarity = {sen:find_average_similarity(sen, democrats, voting_dict) for sen in democrats}
-#print(democrats_average_similarity)
-#print(max([(value, key) for key, value in democrats_average_similarity.items()])[1])
 
 most_average_Democrat = max([(value, key) for key, value in democrats_average_similarity.items()])[1]
 
@@ -153,7 +150,7 @@ def find_average_record(sen_set, voting_dict):
 
 
 average_Democrat_record = find_average_record(democrats, voting_dict)
-#print(average_Democrat_record)
+# print('Average democrats: ' + str(average_Democrat_record))
 
 
 # Task 8
@@ -169,6 +166,10 @@ def bitter_rivals(voting_dict):
         >>> bitter_rivals(voting_dict)
         ('Fox-Epstein', 'Ravella')
     """
-        
-    return (0, 0)
+    leasts = {sen:least_similar(sen, voting_dict) for sen in voting_dict.keys()}
+#     print('Leasts: ' + str(leasts))
+    least_scores = {(sen, least):policy_compare(sen, least, voting_dict) for sen,least in leasts.items()}
+#     print('Least scores: ' + str(least_scores))
+    return min([(value, key) for key, value in least_scores.items()])[1]
 
+print(bitter_rivals(voting_dict))
