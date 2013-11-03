@@ -1,200 +1,46 @@
 package com.test.algorithms;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.Stack;
+import java.util.Arrays;
+import java.util.Random;
 
 public class Trees
 {
-    static interface Node
+    private static void quickSort(int[] array)
     {
-        int getValue();
-
-        List<Node> getChildren();
+        quickSort(array, 0, array.length);
     }
 
-    static class TreeNode implements Node
+    private static void quickSort(int[] array, int start, int end)
     {
-        public int value;
-        public List<Node> children = new ArrayList<Node>();
-
-        public TreeNode(int value)
+        if (end - start < 2)
+            return;
+        int pivot = new Random().nextInt(end - start) + start;
+        swap(array, start, pivot);
+        int p = start;
+        for (int i = start + 1; i < end; i++)
         {
-            this.value = value;
-        }
-
-        public TreeNode addChild(int value)
-        {
-            TreeNode child = new TreeNode(value);
-            children.add(child);
-            return child;
-        }
-
-        public int getValue()
-        {
-            return value;
-        }
-
-        public List<Node> getChildren()
-        {
-            return children;
-        }
-
-        @Override
-        public int hashCode()
-        {
-            return Integer.valueOf(value).hashCode();
-        }
-
-        @Override
-        public boolean equals(Object o)
-        {
-            if (o == null || !(o instanceof TreeNode))
-                return false;
-            return Integer.valueOf(value).equals(((TreeNode) o).getValue());
-        }
-
-        @Override
-        public String toString()
-        {
-            return "" + value;
-        }
-    }
-
-    static class BinaryTreeNode implements Node
-    {
-        public int value;
-        BinaryTreeNode left;
-        BinaryTreeNode right;
-
-        public BinaryTreeNode(int value)
-        {
-            this.value = value;
-        }
-
-        public BinaryTreeNode setLeft(int value)
-        {
-            left = new BinaryTreeNode(value);
-            return left;
-        }
-
-        public BinaryTreeNode setRight(int value)
-        {
-            right = new BinaryTreeNode(value);
-            return right;
-        }
-
-        public int getValue()
-        {
-            return value;
-        }
-
-        public List<Node> getChildren()
-        {
-            List<Node> children = new ArrayList<Trees.Node>();
-            if (left != null)
-                children.add(left);
-            if (right != null)
-                children.add(right);
-            return children;
-        }
-
-        @Override
-        public int hashCode()
-        {
-            return Integer.valueOf(value).hashCode();
-        }
-
-        @Override
-        public boolean equals(Object o)
-        {
-            if (o == null || !(o instanceof BinaryTreeNode))
-                return false;
-            return Integer.valueOf(value).equals(((BinaryTreeNode) o).getValue());
-        }
-
-        @Override
-        public String toString()
-        {
-            return "" + value;
-        }
-    }
-
-    private static Node generateBinaryTree()
-    {
-        BinaryTreeNode root = new BinaryTreeNode(5);
-        BinaryTreeNode node2 = root.setLeft(2);
-        BinaryTreeNode node8 = root.setRight(8);
-        BinaryTreeNode node4 = node2.setRight(4);
-        BinaryTreeNode node6 = node8.setLeft(6);
-        BinaryTreeNode node9 = node8.setRight(9);
-        BinaryTreeNode node7 = node6.setRight(7);
-        return root;
-    }
-
-    private static Node generateTree()
-    {
-        TreeNode root = new TreeNode(5);
-        TreeNode node7 = root.addChild(7);
-        TreeNode node4 = root.addChild(4);
-        TreeNode node3 = root.addChild(3);
-        TreeNode node8 = node7.addChild(8);
-        TreeNode node2 = node4.addChild(2);
-        TreeNode node1 = node4.addChild(1);
-        TreeNode node9 = node1.addChild(9);
-        TreeNode node6 = node3.addChild(6);
-        return root;
-    }
-
-    private static enum TraverseOrder
-    {
-        PRE_ORDER, POST_ORDER
-    };
-
-    private static void traverseDFS(Node root, TraverseOrder order)
-    {
-        Set<Node> visitedSet = new HashSet<Trees.Node>();
-        Set<Node> exploredSet = new HashSet<Trees.Node>();
-        Stack<Node> stack = new Stack<Node>();
-        stack.push(root);
-        addNode(visitedSet, root, order == TraverseOrder.PRE_ORDER);
-        while (!stack.isEmpty())
-        {
-            Node node = stack.peek();
-            boolean anyNodeAdded = false;
-            for (Node child : node.getChildren())
-                if (!visitedSet.contains(child))
-                {
-                    addNode(visitedSet, child, order == TraverseOrder.PRE_ORDER);
-                    stack.push(child);
-                    anyNodeAdded = true;
-                    break;
-                }
-            if (!anyNodeAdded)
+            if (array[i] < array[start])
             {
-                stack.pop();
-                addNode(exploredSet, node, order == TraverseOrder.POST_ORDER);
+                swap(array, p + 1, i);
+                p++;
             }
         }
-        System.out.println("");
+        swap(array, start, p);
+        quickSort(array, start, p);
+        quickSort(array, p + 1, end);
     }
 
-    private static void addNode(Set<Node> set, Node node, boolean print)
+    private static void swap(int[] array, int pos1, int pos2)
     {
-        set.add(node);
-        if (print)
-            System.out.print("" + node + " ");
+        int i = array[pos1];
+        array[pos1] = array[pos2];
+        array[pos2] = i;
     }
 
     public static void main(String[] args)
     {
-        Node binaryTree = generateBinaryTree();
-        traverseDFS(binaryTree, TraverseOrder.PRE_ORDER);
-        traverseDFS(binaryTree, TraverseOrder.POST_ORDER);
-        Node tree = generateTree();
-        traverseDFS(tree, TraverseOrder.PRE_ORDER);
-        traverseDFS(tree, TraverseOrder.POST_ORDER);
+        int[] array = new int[] { 14, 5, 16, 17, 7, 19, 8, 10, 4, 12, 2, 11, 3, 6, 20, 15, 9, 1, 18, 13 };
+        quickSort(array);
+        System.out.println(Arrays.toString(array));
     }
 }
