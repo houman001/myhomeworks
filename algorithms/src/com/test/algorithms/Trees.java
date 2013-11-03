@@ -25,7 +25,7 @@ public class Trees
             this.value = value;
         }
 
-        public Node addChild(int value)
+        public TreeNode addChild(int value)
         {
             TreeNode child = new TreeNode(value);
             children.add(child);
@@ -134,32 +134,67 @@ public class Trees
         return root;
     }
 
-    private static void traverseDFS(Node root)
+    private static Node generateTree()
     {
+        TreeNode root = new TreeNode(5);
+        TreeNode node7 = root.addChild(7);
+        TreeNode node4 = root.addChild(4);
+        TreeNode node3 = root.addChild(3);
+        TreeNode node8 = node7.addChild(8);
+        TreeNode node2 = node4.addChild(2);
+        TreeNode node1 = node4.addChild(1);
+        TreeNode node9 = node1.addChild(9);
+        TreeNode node6 = node3.addChild(6);
+        return root;
+    }
+
+    private static enum TraverseOrder
+    {
+        PRE_ORDER, POST_ORDER
+    };
+
+    private static void traverseDFS(Node root, TraverseOrder order)
+    {
+        Set<Node> visitedSet = new HashSet<Trees.Node>();
         Set<Node> exploredSet = new HashSet<Trees.Node>();
         Stack<Node> stack = new Stack<Node>();
         stack.push(root);
+        addNode(visitedSet, root, order == TraverseOrder.PRE_ORDER);
         while (!stack.isEmpty())
         {
             Node node = stack.peek();
+            boolean anyNodeAdded = false;
             for (Node child : node.getChildren())
-                if (!exploredSet.contains(child))
+                if (!visitedSet.contains(child))
                 {
+                    addNode(visitedSet, child, order == TraverseOrder.PRE_ORDER);
                     stack.push(child);
+                    anyNodeAdded = true;
                     break;
                 }
-            if (node.equals(stack.peek()))
+            if (!anyNodeAdded)
             {
                 stack.pop();
-                System.out.println("" + node.getValue());
-                exploredSet.add(node);
+                addNode(exploredSet, node, order == TraverseOrder.POST_ORDER);
             }
         }
+        System.out.println("");
+    }
+
+    private static void addNode(Set<Node> set, Node node, boolean print)
+    {
+        set.add(node);
+        if (print)
+            System.out.print("" + node + " ");
     }
 
     public static void main(String[] args)
     {
-        Node root = generateBinaryTree();
-        traverseDFS(root);
+        Node binaryTree = generateBinaryTree();
+        traverseDFS(binaryTree, TraverseOrder.PRE_ORDER);
+        traverseDFS(binaryTree, TraverseOrder.POST_ORDER);
+        Node tree = generateTree();
+        traverseDFS(tree, TraverseOrder.PRE_ORDER);
+        traverseDFS(tree, TraverseOrder.POST_ORDER);
     }
 }
