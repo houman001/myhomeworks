@@ -8,6 +8,7 @@ import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.Gen
 import org.scalacheck.Gen.frequency
 import org.scalacheck.Gen.value
+import org.scalacheck.Prop
 import org.scalacheck.Prop.forAll
 import org.scalacheck.Prop.propBoolean
 import org.scalacheck.Properties
@@ -19,20 +20,20 @@ abstract class QuickCheckHeap extends Properties("Heap") with IntHeap {
     findMin(h) == a
   }
 
-  property("readd-min") = forAll { (h: H) =>
+  property("readd-min") = Prop.forAll(genHeap) { h =>
     val m = if (isEmpty(h)) 0 else findMin(h)
     findMin(insert(m, h)) == m
   }
 
-  property("meld-min") = forAll { (h1: H, h2: H) =>
+  property("meld-min") = Prop.forAll(genHeap, genHeap) { (h1, h2) =>
     findMin(meld(h1, h2)) == min(findMin(h1), findMin(h2))
   }
 
-  property("sorted") = forAll { (h: H) =>
+  property("sorted") = Prop.forAll(genHeap) { h =>
     heapSorted(h)
   }
 
-  property("meld-and-move") = forAll { (h1: H, h2: H) =>
+  property("meld-and-move") = Prop.forAll(genHeap, genHeap) { (h1, h2) =>
     heapsEqual(meld(h1, h2),
       meld(deleteMin(h1), insert(findMin(h1), h2)))
   }
@@ -57,7 +58,5 @@ abstract class QuickCheckHeap extends Properties("Heap") with IntHeap {
     n <- arbitrary[A]
     h <- frequency((1, value(empty)), (9, genHeap))
   } yield insert(n, h)
-
-  implicit lazy val arbHeap: Arbitrary[H] = Arbitrary(genHeap)
 
 }
