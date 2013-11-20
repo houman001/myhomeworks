@@ -4,9 +4,9 @@ import org.scalacheck.Gen
 import org.scalacheck.Prop.forAll
 import org.scalacheck.Properties
 
-object QuickCircuit extends Properties("Circuit") {
+class QuickCircuit extends Properties("Circuit") {
 
-  import Circuit.{andGate, orGate, orGate2, demux,run}
+  import Circuit.{ andGate, orGate, orGate2, demux, run }
 
   property("and gate") = forAll {
     (sIn1: Boolean, sIn2: Boolean) =>
@@ -36,7 +36,7 @@ object QuickCircuit extends Properties("Circuit") {
       in2.setSignal(sIn2)
       run
       out.getSignal == (sIn1 | sIn2)
-    }
+  }
 
   val genBoolean = Gen.oneOf(Gen.value(true), Gen.value(false))
   val genShortLitBoolean = for {
@@ -48,8 +48,9 @@ object QuickCircuit extends Properties("Circuit") {
     if (s) 1 else 0
 
   def controlToBitNumber(bs: List[Boolean]) =
-    bs.foldLeft(0){
-      case (acc, b) => 2 * acc + signalToBit(b) }
+    bs.foldLeft(0) {
+      case (acc, b) => 2 * acc + signalToBit(b)
+    }
 
   def setWiresToSignals(ws: List[Wire], ss: List[Boolean]) =
     (ws zip ss) foreach { case (w, s) => w setSignal s }
@@ -57,14 +58,14 @@ object QuickCircuit extends Properties("Circuit") {
   def countOneBits(ws: List[Wire]) =
     ws.map(_.getSignal).filter(identity).length
 
-  property("demux") = forAll (genBoolean, genShortLitBoolean) {
+  property("demux") = forAll(genBoolean, genShortLitBoolean) {
     (sIn: Boolean, sControl: List[Boolean]) =>
       val numBitsControl = sControl.length
       val numBitsOutput = 1 << numBitsControl
       val wIn = new Wire
-      val wControl = List.fill(numBitsControl){new Wire}
-      val wOutput = List.fill(numBitsOutput){new Wire}
-    
+      val wControl = List.fill(numBitsControl) { new Wire }
+      val wOutput = List.fill(numBitsOutput) { new Wire }
+
       demux(wIn, wControl, wOutput)
       wIn.setSignal(sIn)
       setWiresToSignals(wControl, sControl)

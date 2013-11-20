@@ -1,10 +1,10 @@
 package simulations
 package gui
 
-import javax.swing.{JComponent, JFrame, JLabel, Timer, SwingUtilities}
-import javax.swing.border.{EmptyBorder}
-import java.awt.{Graphics, Graphics2D, GridLayout, BorderLayout, Color, Dimension, Rectangle, Polygon}
-import java.awt.event.{ActionListener, ActionEvent}
+import javax.swing.{ JComponent, JFrame, JLabel, Timer, SwingUtilities }
+import javax.swing.border.{ EmptyBorder }
+import java.awt.{ Graphics, Graphics2D, GridLayout, BorderLayout, Color, Dimension, Rectangle, Polygon }
+import java.awt.event.{ ActionListener, ActionEvent }
 
 object EpidemyDisplay extends EpidemySimulator with App {
 
@@ -61,7 +61,7 @@ object EpidemyDisplay extends EpidemySimulator with App {
 
   import GraphicConfig._
 
-  class Room (val worldRow: Int, val worldCol: Int) extends JComponent {
+  class Room(val worldRow: Int, val worldCol: Int) extends JComponent {
     val roomDimension = new Dimension(roomSize + 1, roomSize + 1)
     setPreferredSize(roomDimension)
     var situation: Situation = null
@@ -102,8 +102,7 @@ object EpidemyDisplay extends EpidemySimulator with App {
         if (history.isEmpty) {
           graph.setColor(Color.DARK_GRAY)
           graph.fill(new Rectangle(getWidth, graphHeight))
-        }
-        else {
+        } else {
           val steps: Double = history.length - 1
           val advanceStep: Double = (((getWidth - 3).toDouble) / (steps + 1)).toDouble
           def proportion(count: Int): Int =
@@ -137,7 +136,7 @@ object EpidemyDisplay extends EpidemySimulator with App {
           graph.fillPolygon(sickPoly)
         }
         graph.setColor(Color.WHITE)
-        graph.drawRect(0, 0, getWidth -1, graphHeight - 1)
+        graph.drawRect(0, 0, getWidth - 1, graphHeight - 1)
       }
     }
     object roomDisplay extends JComponent {
@@ -171,12 +170,12 @@ object EpidemyDisplay extends EpidemySimulator with App {
           history = history.head :: history
         }
         if (!history.isEmpty) setText("On day " + countTime + ", " +
-                                      history.head.healthy + " healthy, " +
-                                      history.head.sick + " sick/dead, " +
-                                      history.head.immune + " immune.")
+          history.head.healthy + " healthy, " +
+          history.head.sick + " sick/dead, " +
+          history.head.immune + " immune.")
         populationGraph.repaint()
-      	countTime += 1
-        if (countTime == 150) println("Dead people on day 150: "+persons.count(p => p.dead))
+        countTime += 1
+        if (countTime == 150) println("Dead people on day 150: " + persons.count(p => p.dead))
       }
     }
     setContentPane(new JComponent {
