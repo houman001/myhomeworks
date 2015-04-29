@@ -15,7 +15,7 @@ object Polynomial {
     if (delta < 0)
       Set()
     else {
-      Set(math.sqrt(delta), -math.sqrt(delta)) map (-b + _ / (2 * a))
+      Set(math.sqrt(delta), -math.sqrt(delta)) map (x => (-b + x) / (2 * a))
     }
   }
 }
