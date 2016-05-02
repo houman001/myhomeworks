@@ -9,7 +9,7 @@ public class Heaps {
             throw new RuntimeException("Invalid heap size");
         }
         if (index < 1) {
-            throw new RuntimeException("No parent for root");
+            return -1;
         }
         return index / 2;
     }
@@ -41,17 +41,15 @@ public class Heaps {
     }
 
     private static int[] generateMaxHeap(int[] array) {
-        // Find the next 2^n - 1 number that can contain a complete binary tree.
-        int heapArrayLength = (int) Math.pow(2, (int) (Math.log(array.length) / Math.log(2) + 1)) - 1;
-        int[] heap = new int[heapArrayLength];
-        System.arraycopy(array, 0, heap, 0, array.length);
-        for (int i = array.length - 1; i >= 0; i--) {
-            maxHeapify(heap, array.length, i);
+        int[] heap = Arrays.copyOf(array, array.length);
+        for (int i = 1; i < array.length; i++) {
+            // System.out.println("Calling maxHeapifyLeaf for sub-array " + (i + 1));
+            maxHeapifyLeaf(heap, i + 1, i);
         }
         return heap;
     }
 
-    private static void maxHeapify(int[] heap, int heapSize, int index) {
+    private static void maxHeapifyRoot(int[] heap, int heapSize, int index) {
         if (heapSize > heap.length) {
             throw new RuntimeException("Invalid heap size: " + heapSize);
         }
@@ -59,27 +57,40 @@ public class Heaps {
             throw new RuntimeException("Invalid index for heapifying: " + index);
         }
         int maxChildIndex = index;
-        int maxChild = heap[index];
         int leftIndex = left(heap, heapSize, index);
         int rightIndex = right(heap, heapSize, index);
-        if (leftIndex > 0 && heap[leftIndex] > maxChild) {
+        if (leftIndex > 0 && heap[leftIndex] > heap[maxChildIndex]) {
             maxChildIndex = leftIndex;
-            maxChild = heap[leftIndex];
         }
-        if (rightIndex > 0 && heap[rightIndex] > maxChild) {
+        if (rightIndex > 0 && heap[rightIndex] > heap[maxChildIndex]) {
             maxChildIndex = rightIndex;
-            maxChild = heap[rightIndex];
         }
-        if (maxChild > heap[index]) {
+        if (heap[maxChildIndex] > heap[index]) {
             swap(heap, index, maxChildIndex);
-            maxHeapify(heap, heapSize, maxChildIndex);
+            maxHeapifyRoot(heap, heapSize, maxChildIndex);
+        }
+    }
+
+    private static void maxHeapifyLeaf(int[] heap, int heapSize, int index) {
+        if (heapSize > heap.length) {
+            throw new RuntimeException("Invalid heap size: " + heapSize);
+        }
+        if (index >= heapSize) {
+            throw new RuntimeException("Invalid index for heapifying: " + index);
+        }
+        // System.out.println("Heap: " + Arrays.toString(Arrays.copyOf(heap, heapSize)) + ", max heapifying: " + index);
+        int parentIndex = parent(heap, heapSize, index);
+        if (parentIndex >= 0 && heap[parentIndex] < heap[index]) {
+            // System.out.println("Swapping: " + index + " with parent: " + parentIndex);
+            swap(heap, index, parentIndex);
+            maxHeapifyLeaf(heap, heapSize, parentIndex);
         }
     }
 
     public static void main(String[] args) {
-        int TEST_ARRAY_LENGTH = 16;
+        int TEST_ARRAY_LENGTH = 20;
         int MIN_RANDOM_NUMBER = 0;
-        int MAX_RANDOM_NUMBER = 20;
+        int MAX_RANDOM_NUMBER = 99;
         int[] array = new int[TEST_ARRAY_LENGTH];
         for (int i = 0; i < TEST_ARRAY_LENGTH; i++) {
             array[i] = new Random().nextInt(MAX_RANDOM_NUMBER - MIN_RANDOM_NUMBER + 1) + MIN_RANDOM_NUMBER;
