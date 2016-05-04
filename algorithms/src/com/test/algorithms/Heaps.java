@@ -43,7 +43,6 @@ public class Heaps {
     private static int[] generateMaxHeap(int[] array) {
         int[] heap = Arrays.copyOf(array, array.length);
         for (int i = 1; i < array.length; i++) {
-            // System.out.println("Calling maxHeapifyLeaf for sub-array " + (i + 1));
             maxHeapifyLeaf(heap, i + 1, i);
         }
         return heap;
@@ -87,6 +86,17 @@ public class Heaps {
         }
     }
 
+    private static int[] heapSort(int[] array) {
+        int[] heap = generateMaxHeap(array);
+        int heapSize = array.length;
+
+        for (int i = heapSize - 1; i > 0; i--) {
+            swap(heap, 0, i);
+            maxHeapifyRoot(heap, i, 0);
+        }
+        return Arrays.copyOf(heap, heapSize);
+    }
+
     public static void main(String[] args) {
         int TEST_ARRAY_LENGTH = 20;
         int MIN_RANDOM_NUMBER = 0;
@@ -107,6 +117,13 @@ public class Heaps {
             }
             if (rightIndex > 0 && heap[rightIndex] > heap[i]) {
                 System.err.println("Right child of element index " + i + " is bigger!");
+            }
+        }
+        int[] sortedArray = heapSort(array);
+        System.out.println("Sorted array: " + Arrays.toString(sortedArray));
+        for (int i = 0; i < sortedArray.length - 1; i++) {
+            if (sortedArray[i] > sortedArray[i + 1]) {
+                System.err.println("Array is not sorted.");
             }
         }
     }
