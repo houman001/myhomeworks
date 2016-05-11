@@ -1,15 +1,24 @@
 package com.test.problems;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 import java.util.Set;
 
 public class CountingSheep {
     // https://code.google.com/codejam/contest/6254486/dashboard#s=p0
 
+    private static final String INPUT_FILE = "/tmp/A-large-practice.in";
+    private static final String OUTPUT_FILE = "/tmp/A-large-practice.out";
     private static final Collection<Integer> ALL_DIGITS = Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
 
     private static void addNumbersSeen(Set<Integer> numberSet, int number) {
@@ -35,20 +44,25 @@ public class CountingSheep {
         return Optional.empty();
     }
 
-    public static void main(String[] args) {
-        int TEST_ARRAY_LENGTH = 1000;
-        int MIN_RANDOM_NUMBER = 0;
-        int MAX_RANDOM_NUMBER = 999;
-        int[] array = new int[TEST_ARRAY_LENGTH];
-        for (int i = 0; i < TEST_ARRAY_LENGTH; i++) {
-            array[i] = new Random().nextInt(MAX_RANDOM_NUMBER - MIN_RANDOM_NUMBER + 1) + MIN_RANDOM_NUMBER;
+    private static void testInput() throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(INPUT_FILE)));
+        PrintStream bw = new PrintStream(new FileOutputStream(OUTPUT_FILE));
+        int numberOfCases = Integer.parseInt(br.readLine());
+        List<Integer> numbers = new ArrayList<>();
+        for (int i = 0; i < numberOfCases; i++) {
+            numbers.add(Integer.parseInt(br.readLine()));
         }
-        for (int number : array) {
+        int index = 1;
+        for (int number : numbers) {
             Optional<Integer> answer = whenWillSheFallAsleep(number);
-            if (!answer.isPresent()) {
-                System.err.println("" + number + ": INSOMNIA");
-            }
-            // System.out.println("" + number + ": " + (answer.isPresent() ? answer.get() : "INSOMNIA"));
+            String answerString = answer.isPresent() ? answer.get().toString() : "INSOMNIA";
+            bw.println("Case #" + index + ": " + answerString);
+            index++;
         }
+        System.out.println("Done!");
+    }
+
+    public static void main(String[] args) throws IOException {
+        testInput();
     }
 }
