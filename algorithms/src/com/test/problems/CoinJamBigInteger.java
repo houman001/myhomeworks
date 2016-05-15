@@ -6,40 +6,48 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public class CoinJam {
+public class CoinJamBigInteger {
     // https://code.google.com/codejam/contest/6254486/dashboard#s=p2
+    // This doesn't use any smarts, just uses big integers instead of longs.
+    // I thought it would be fun to see how slow big integers are ;-)
 
-    private static final String INPUT_FILE = "/tmp/C-small-practice.in";
-    private static final String OUTPUT_FILE = "/tmp/C-small-practice.out";
+    private static final String INPUT_FILE = "/tmp/C-large-practice.in";
+    private static final String OUTPUT_FILE = "/tmp/C-large-practice.out";
+    private static final BigInteger TWO = new BigInteger("2");
 
-    private static Optional<Integer> findFactor(long number) {
-        for (int i = 2; i <= Math.sqrt(number); i++) {
-            if (number % i == 0) {
+    private static Optional<BigInteger> findFactor(BigInteger number) {
+        // number.sqrt() would be better
+        for (BigInteger i = TWO; i.compareTo(number.divide(TWO)) <= 0; i = i.add(BigInteger.ONE)) {
+            if (number.remainder(i).equals(BigInteger.ZERO)) {
                 return Optional.of(i);
             }
         }
         return Optional.empty();
     }
 
-    private static Optional<List<Integer>> getCoinJamFactors(long number, int desiredLength) {
-        if (number % 2 == 0) {
+    private static Optional<List<BigInteger>> getCoinJamFactors(BigInteger number, int desiredLength) {
+        // System.out.println("Finding factors for: " + number);
+        if (number.remainder(TWO).equals(BigInteger.ZERO)) {
             return Optional.empty();
         }
-        String numberString = Long.toString(number, 2);
+        String numberString = number.toString(2);
         if (numberString.length() != desiredLength) {
+            // System.out.println("Desired length: " + desiredLength + ", number length: " + numberString.length());
             return Optional.empty();
         }
-        List<Integer> factors = new ArrayList<>();
-        // System.out.println(numberString);
+        List<BigInteger> factors = new ArrayList<>();
+        // System.out.println("Binary representation: " + numberString);
         for (int radix = 2; radix <= 10; radix++) {
-            long numberInRadix = Long.parseLong(numberString, radix);
-            Optional<Integer> factorOptional = findFactor(numberInRadix);
+            // System.out.println("Radix: " + radix);
+            BigInteger numberInRadix = new BigInteger(numberString, radix);
+            Optional<BigInteger> factorOptional = findFactor(numberInRadix);
             if (!factorOptional.isPresent()) {
                 // System.out.println("On radix " + radix + " is prime: " + numberInRadix);
                 return Optional.empty();
@@ -49,17 +57,19 @@ public class CoinJam {
         return Optional.of(factors);
     }
 
-    private static Map<Long, List<Integer>> findCoinJams(int length, int numberOfCases) {
+    private static Map<BigInteger, List<BigInteger>> findCoinJams(int length, int numberOfCases) {
         if (length < 2 || numberOfCases < 1) {
             return new HashMap<>();
         }
-        Map<Long, List<Integer>> coinJams = new HashMap<>();
-        long minNumber = (int) Math.pow(2, length - 1);
-        long maxNumber = (int) Math.pow(2, length);
-        for (long num = minNumber + 1; num < maxNumber; num += 2) {
-            Optional<List<Integer>> coinJamFactors = getCoinJamFactors(num, length);
+        Map<BigInteger, List<BigInteger>> coinJams = new HashMap<>();
+        // System.out.println("Length: " + length);
+        BigInteger minNumber = TWO.pow(length - 1).add(BigInteger.ONE);
+        BigInteger maxNumber = TWO.pow(length).subtract(BigInteger.ONE);
+        // System.out.println("Min: " + minNumber + ", Max: " + maxNumber);
+        for (BigInteger num = minNumber; num.compareTo(maxNumber) < 0; num = num.add(TWO)) {
+            Optional<List<BigInteger>> coinJamFactors = getCoinJamFactors(num, length);
             if (coinJamFactors.isPresent()) {
-                System.out.println("Found one: " + Long.toString(num, 2));
+                System.out.println("Found one: " + num.toString(2));
                 coinJams.put(num, coinJamFactors.get());
             }
             if (coinJams.size() == numberOfCases) {
@@ -69,10 +79,10 @@ public class CoinJam {
         return coinJams;
     }
 
-    private static void printAnswer(PrintStream printStream, Map<Long, List<Integer>> answer) {
-        for (Map.Entry<Long, List<Integer>> answerEntry : answer.entrySet()) {
-            printStream.print(Long.toString(answerEntry.getKey(), 2));
-            for (int factor : answerEntry.getValue()) {
+    private static void printAnswer(PrintStream printStream, Map<BigInteger, List<BigInteger>> answer) {
+        for (Map.Entry<BigInteger, List<BigInteger>> answerEntry : answer.entrySet()) {
+            printStream.print(answerEntry.getKey().toString(2));
+            for (BigInteger factor : answerEntry.getValue()) {
                 printStream.print(" " + factor);
             }
             printStream.println();
@@ -95,7 +105,7 @@ public class CoinJam {
             }
             int length = Integer.parseInt(tokens[0]);
             int numberOfCases = Integer.parseInt(tokens[1]);
-            Map<Long, List<Integer>> answer = findCoinJams(length, numberOfCases);
+            Map<BigInteger, List<BigInteger>> answer = findCoinJams(length, numberOfCases);
             printStream.println("Case #" + index + ":");
             printAnswer(printStream, answer);
             index++;
@@ -104,7 +114,7 @@ public class CoinJam {
     }
 
     private static void testSampleInput() {
-        Map<Long, List<Integer>> answer = findCoinJams(10, 20);
+        Map<BigInteger, List<BigInteger>> answer = findCoinJams(10, 20);
         printAnswer(System.out, answer);
     }
 
