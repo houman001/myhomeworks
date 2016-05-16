@@ -1,4 +1,4 @@
-package com.test.atlassian.flatten;
+package com.test.problems.someoldtest.flatten;
 
 /**
  * A type that stores three values of the same type.

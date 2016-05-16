@@ -1,4 +1,4 @@
-package com.test.atlassian.flatten;
+package com.test.problems.someoldtest.flatten;
 
 /**
  * A type which stores one of either of two types of value, but not both.

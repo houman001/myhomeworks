@@ -1,4 +1,4 @@
-package com.test.atlassian.flatten;
+package com.test.problems.someoldtest.flatten;
 
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -1,4 +1,4 @@
-package com.test.atlassian.findcommonancestor;
+package com.test.problems.someoldtest.findcommonancestor;
 
 public interface FindCommonAncestor
 {

@@ -1,4 +1,4 @@
-package com.test.atlassian.iteration;
+package com.test.problems.someoldtest.iteration;
 
 import java.util.Queue;
 

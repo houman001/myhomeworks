@@ -1,4 +1,4 @@
-package com.test.atlassian.iteration;
+package com.test.problems.someoldtest.iteration;
 
 public class MyFunction2 implements Function2<Integer, Long, Long>
 {

@@ -1,4 +1,4 @@
-package com.test.atlassian.flatten;
+package com.test.problems.someoldtest.flatten;
 
 public class MyFlattenTreeTest
 {

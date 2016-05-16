@@ -1,4 +1,4 @@
-package com.test.atlassian.findcommonancestor;
+package com.test.problems.someoldtest.findcommonancestor;
 
 import java.util.HashSet;
 import java.util.Set;

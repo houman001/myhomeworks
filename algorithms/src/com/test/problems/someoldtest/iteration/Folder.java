@@ -1,6 +1,5 @@
-package com.test.atlassian.iteration;
+package com.test.problems.someoldtest.iteration;
 
-import java.util.List;
 import java.util.Queue;
 
 public interface Folder<T, U>

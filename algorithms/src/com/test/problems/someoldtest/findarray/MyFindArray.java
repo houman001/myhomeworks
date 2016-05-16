@@ -1,4 +1,4 @@
-package com.test.atlassian.findarray;
+package com.test.problems.someoldtest.findarray;
 
 public class MyFindArray implements FindArray
 {
