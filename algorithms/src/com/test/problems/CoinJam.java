@@ -59,7 +59,7 @@ public class CoinJam {
         for (long num = minNumber + 1; num < maxNumber; num += 2) {
             Optional<List<Integer>> coinJamFactors = getCoinJamFactors(num, length);
             if (coinJamFactors.isPresent()) {
-                System.out.println("Found one: " + Long.toString(num, 2));
+                // System.out.println("Found one: " + Long.toString(num, 2));
                 coinJams.put(num, coinJamFactors.get());
             }
             if (coinJams.size() == numberOfCases) {
@@ -104,12 +104,12 @@ public class CoinJam {
     }
 
     private static void testSampleInput() {
-        Map<Long, List<Integer>> answer = findCoinJams(10, 20);
+        Map<Long, List<Integer>> answer = findCoinJams(16, 500);
         printAnswer(System.out, answer);
     }
 
     public static void main(String[] args) throws IOException {
         testSampleInput();
-//        testInput();
+        // testInput();
     }
 }
