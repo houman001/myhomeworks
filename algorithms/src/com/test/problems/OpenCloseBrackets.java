@@ -1,4 +1,4 @@
-package com.test.algorithms;
+package com.test.problems;
 
 public class OpenCloseBrackets {
     private static void printBrackets(int length, boolean print) {

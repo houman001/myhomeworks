@@ -1,4 +1,4 @@
-package com.test.algorithms;
+package com.test.problems;
 
 import java.util.Arrays;
 import java.util.Random;
