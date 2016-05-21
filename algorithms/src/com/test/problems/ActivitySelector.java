@@ -43,15 +43,13 @@ public class ActivitySelector {
 
     // DYNAMIC
 
-    private static Map<Set<Integer>, Set<Integer>> interimSolutions;
-
     // Activities are sorted by their finish time.
     private static Collection<Integer> recursiveDynamicSelect(int[] startTimes, int[] finishTimes) {
-        interimSolutions = new HashMap<>();
+        Map<Set<Integer>, Set<Integer>> interimSolutions = new HashMap<>();
         Set<Integer> activities = new HashSet<>();
         for (int i = 1; i < startTimes.length; i++)
             activities.add(i);
-        return recursiveDynamicSelect(startTimes, finishTimes, activities);
+        return recursiveDynamicSelect(interimSolutions, startTimes, finishTimes, activities);
     }
 
     private static boolean isCompatible(int[] startTimes, int[] finishTimes, int a1, int a2) {
@@ -65,7 +63,9 @@ public class ActivitySelector {
         return sum;
     }
 
-    private static Collection<Integer> recursiveDynamicSelect(int[] startTimes, int[] finishTimes, Set<Integer> activities) {
+    private static Collection<Integer> recursiveDynamicSelect(Map<Set<Integer>, Set<Integer>> interimSolutions,
+                                                              int[] startTimes, int[] finishTimes,
+                                                              Set<Integer> activities) {
         // System.out.println("Called for " + activities);
         if (activities.size() < 1)
             return new ArrayList<>();
@@ -78,25 +78,77 @@ public class ActivitySelector {
         Set<Integer> compatibleActivities = activities.stream().filter(activityToCheck ->
                 isCompatible(startTimes, finishTimes, selectedActivity, activityToCheck)).collect(Collectors.toSet());
         // System.out.println("Compatible activities with " + selectedActivity + ": " + compatibleActivities);
-        Collection<Integer> compatibleActivitiesSelected = recursiveDynamicSelect(startTimes, finishTimes, compatibleActivities);
+        Collection<Integer> compatibleActivitiesSelected = recursiveDynamicSelect(interimSolutions, startTimes,
+                finishTimes, compatibleActivities);
         compatibleActivitiesSelected.add(selectedActivity);
         int hoursIfSelected = hoursCovered(startTimes, finishTimes, compatibleActivitiesSelected);
         Set<Integer> otherActivities = new HashSet<>(activities);
         otherActivities.remove(selectedActivity);
-        Collection<Integer> otherActivitiesSelected = recursiveDynamicSelect(startTimes, finishTimes, otherActivities);
+        Collection<Integer> otherActivitiesSelected = recursiveDynamicSelect(interimSolutions, startTimes, finishTimes,
+                otherActivities);
         int hoursIfNotSelected = hoursCovered(startTimes, finishTimes, otherActivitiesSelected);
         return (hoursIfSelected > hoursIfNotSelected) ? compatibleActivitiesSelected : otherActivitiesSelected;
     }
 
+    private static void collectIterativeDynamicResult(Set<Integer> resultCollector, int[][] ks, int i, int j, int k) {
+        if (k < 1)
+            return;
+        resultCollector.add(k);
+        collectIterativeDynamicResult(resultCollector, ks, i, k, ks[i][k]);
+        collectIterativeDynamicResult(resultCollector, ks, k, j, ks[k][j]);
+    }
+
+    private static Collection<Integer> iterativeDynamicSelect(int[] startTimes, int[] finishTimes) {
+        int length = startTimes.length;
+        int[][] cs = new int[length][length];
+        int[][] ks = new int[length][length];
+        for (int i = 0; i < length; i++)
+            for (int j = 0; j < length; j++) {
+                cs[i][j] = 0;
+                ks[i][j] = 0;
+            }
+        for (int i = 1; i < length; i++) {
+            for (int row = 0, col = i; col < length; row++, col++) {
+                int maxC = 0;
+                int bestK = 0;
+                Set<Integer> activitiesInBetween = findActivitiesInBetween(startTimes, finishTimes, row, col);
+                for (int k : activitiesInBetween) {
+                    int c = cs[row][k] + cs[k][col] + (finishTimes[k] - startTimes[k]);
+                    if (c > maxC) {
+                        maxC = c;
+                        bestK = k;
+                    }
+                }
+                cs[row][col] = maxC;
+                ks[row][col] = bestK;
+            }
+        }
+        Set<Integer> result = new HashSet<>();
+        int i = 0;
+        int j = length - 1;
+        int firstK = ks[i][j];
+        collectIterativeDynamicResult(result, ks, i, j, firstK);
+        return result;
+    }
+
+    private static Set<Integer> findActivitiesInBetween(int[] startTimes, int[] finishTimes, int from, int to) {
+        Set<Integer> activities = new HashSet<>();
+        for (int i = 0; i < startTimes.length; i++) {
+            if (startTimes[i] >= finishTimes[from] && finishTimes[i] <= startTimes[to])
+                activities.add(i);
+        }
+        return activities;
+    }
+
     public static void main(String[] args) {
-        int numberOfActivities = 30;
-        int[] startTimes = new int[numberOfActivities + 1];
-        int[] finishTimes = new int[numberOfActivities + 1];
+        int numberOfActivities = 80;
+        int[] startTimes = new int[numberOfActivities + 2];
+        int[] finishTimes = new int[numberOfActivities + 2];
         startTimes[0] = 0;
         finishTimes[0] = 0;
         int lastFinishTime = 1;
         System.out.print("Activities: ");
-        for (int i = 1; i <= 20; i++) {
+        for (int i = 1; i <= numberOfActivities; i++) {
             if (i % 5 == 1)
                 System.out.println("");
             else if (i > 1)
@@ -113,9 +165,12 @@ public class ActivitySelector {
             lastFinishTime = finishTime;
             System.out.print("#" + i + " " + startTime + "-" + finishTime);
         }
+        startTimes[numberOfActivities + 1] = lastFinishTime;
+        finishTimes[numberOfActivities + 1] = lastFinishTime;
         System.out.println("");
         Collection<Integer> recursiveGreedyResult = recursiveGreedySelect(startTimes, finishTimes);
-        System.out.println("Greedy, hours covered: " + hoursCovered(startTimes, finishTimes, recursiveGreedyResult));
+        System.out.println("\nGreedy, hours covered: " + hoursCovered(startTimes, finishTimes, recursiveGreedyResult) +
+                ", count: " + recursiveGreedyResult.size());
         for (int index : recursiveGreedyResult) {
             System.out.println("Activity #" + index + ", from " + startTimes[index] + " to " + finishTimes[index]);
         }
@@ -124,9 +179,18 @@ public class ActivitySelector {
             throw new RuntimeException("Iterative greedy " + iterativeGreedyResult +
                     " does not equal recursive greedy " + recursiveGreedyResult + ".");
         }
-        Collection<Integer> dynamicResult = recursiveDynamicSelect(startTimes, finishTimes);
-        System.out.println("Dynamic, hours covered: " + hoursCovered(startTimes, finishTimes, dynamicResult));
-        for (int index : dynamicResult) {
+        if (false) {
+            Collection<Integer> recursiveDynamicResult = recursiveDynamicSelect(startTimes, finishTimes);
+            System.out.println("\nDynamic, hours covered: " + hoursCovered(startTimes, finishTimes, recursiveDynamicResult) +
+                    ", count: " + recursiveDynamicResult.size());
+            for (int index : recursiveDynamicResult) {
+                System.out.println("Activity #" + index + ", from " + startTimes[index] + " to " + finishTimes[index]);
+            }
+        }
+        Collection<Integer> iterativeDynamicResult = iterativeDynamicSelect(startTimes, finishTimes);
+        System.out.println("\nDynamic, hours covered: " + hoursCovered(startTimes, finishTimes, iterativeDynamicResult) +
+                ", count: " + iterativeDynamicResult.size());
+        for (int index : iterativeDynamicResult) {
             System.out.println("Activity #" + index + ", from " + startTimes[index] + " to " + finishTimes[index]);
         }
     }
