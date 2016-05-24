@@ -22,6 +22,11 @@ public class OpenCloseBrackets {
         }
     }
 
+    private static boolean checkStringUsingStack(String str) {
+        // FIXME: Implement
+        return false;
+    }
+
     private static boolean checkString(String str) {
         int sum = 0;
         for (int i = 0; i < str.length(); i++) {

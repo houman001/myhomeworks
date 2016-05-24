@@ -3,7 +3,11 @@ package com.test.problems;
 import java.util.Arrays;
 import java.util.Random;
 
-public class MaxSubArray {
+public class MaxSumInArray {
+    private static void findMaxSubArrayRecursively(int[] array) {
+        // FIXME: Implement
+    }
+
     private static void findMaxSubArrayInLinearTime(int[] array) {
         int maxSubStartingIndex = 0;
         int maxSubEndingIndex = 0;
