@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
-public class CountXoGrams {
+public class CountXGrams {
     private static Map<String, Integer> countMonograms(String text) {
         return countGrams(text, 1);
     }
