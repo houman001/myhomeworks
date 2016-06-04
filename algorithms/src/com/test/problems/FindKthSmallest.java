@@ -9,8 +9,7 @@ public class FindKthSmallest {
     }
 
     private static int findKthSmallest(int[] array, int k, int left, int right) {
-//        System.out.println("Array: " + Arrays.toString(array));
-//        System.out.println("Looking for " + k + "th from " + left + " to " + right);
+        System.out.println("Looking for " + k + "th from " + left + " to " + right);
         if (left > right) {
             throw new RuntimeException("We messed up!");
         }
@@ -22,30 +21,38 @@ public class FindKthSmallest {
         }
         int pivot = left + new Random().nextInt(right - left);
         int pivotValue = array[pivot];
-        int smallerItemsAreBeforeThis = left;
+        // System.out.println("Pivot is " + pivotValue + " at " + pivot);
+        // Swap pivot with the first item
+        swap(array, left, pivot);
+        // System.out.println("Array after swapping pivot: " + Arrays.toString(array));
+        int smallerItemsAreBeforeThis = left + 1;
         int biggerItemsBeginAfterThis = right - 1;
-        boolean allEqualPivot = true;
+        boolean allEqual = true;
         while (smallerItemsAreBeforeThis <= biggerItemsBeginAfterThis) {
             if (array[smallerItemsAreBeforeThis] != pivotValue || array[biggerItemsBeginAfterThis] != pivotValue) {
-                allEqualPivot = false;
+                allEqual = false;
             }
+            // The last item in the lower sub-array definitely in its place.
             if (array[smallerItemsAreBeforeThis] <= pivotValue) {
                 smallerItemsAreBeforeThis++;
             } else if (array[biggerItemsBeginAfterThis] > pivotValue) {
                 biggerItemsBeginAfterThis--;
             } else {
+                // System.out.println("Swapping: " + smallerItemsAreBeforeThis + " with " + biggerItemsBeginAfterThis);
                 swap(array, smallerItemsAreBeforeThis, biggerItemsBeginAfterThis);
                 smallerItemsAreBeforeThis++;
                 biggerItemsBeginAfterThis--;
             }
         }
-//        System.out.println("Pivot is " + pivotValue + ", smaller items are before " + smallerItemsAreBeforeThis +
-//                           " bigger items are after " + biggerItemsBeginAfterThis);
-        if (allEqualPivot) {
+        // Bring back pivot
+        swap(array, left, smallerItemsAreBeforeThis - 1);
+        // System.out.println("Re-arranged Array: " + Arrays.toString(array));
+        // System.out.println("Partitioned at " + (smallerItemsAreBeforeThis - 1));
+        if (allEqual || smallerItemsAreBeforeThis == k + 1) {
             return pivotValue;
         }
         if (k < smallerItemsAreBeforeThis) {
-            return findKthSmallest(array, k, left, smallerItemsAreBeforeThis);
+            return findKthSmallest(array, k, left, smallerItemsAreBeforeThis - 1);
         }
         return findKthSmallest(array, k, biggerItemsBeginAfterThis + 1, right);
     }
@@ -57,16 +64,15 @@ public class FindKthSmallest {
     }
 
     public static void main(String[] args) {
-        int TEST_ARRAY_LENGTH = 10000000;
+        int TEST_ARRAY_LENGTH = 1000000;
         int MIN_RANDOM_NUMBER = 0;
-        int MAX_RANDOM_NUMBER = 10000;
+        int MAX_RANDOM_NUMBER = 10;
         int[] array = new int[TEST_ARRAY_LENGTH];
         for (int i = 0; i < TEST_ARRAY_LENGTH; i++) {
             array[i] = new Random().nextInt(MAX_RANDOM_NUMBER - MIN_RANDOM_NUMBER + 1) + MIN_RANDOM_NUMBER;
         }
-//        int[] array = new int[] { 51, 38, 58, 1, 9, 69, 55, 69 };
         int k = TEST_ARRAY_LENGTH / 4 + new Random().nextInt(TEST_ARRAY_LENGTH / 2);
-//        System.out.println("Array: " + Arrays.toString(array));
+        // System.out.println("Array: " + Arrays.toString(array));
         int kth = findKthSmallest(array, k);
         System.out.println("" + k + "th: " + kth);
         Arrays.sort(array);
