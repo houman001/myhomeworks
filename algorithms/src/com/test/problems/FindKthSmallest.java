@@ -33,7 +33,7 @@ public class FindKthSmallest {
                 allEqual = false;
             }
             // The last item in the lower sub-array definitely in its place.
-            if (array[smallerItemsAreBeforeThis] <= pivotValue) {
+            if (array[smallerItemsAreBeforeThis] < pivotValue) {
                 smallerItemsAreBeforeThis++;
             } else if (array[biggerItemsBeginAfterThis] > pivotValue) {
                 biggerItemsBeginAfterThis--;
@@ -66,7 +66,7 @@ public class FindKthSmallest {
     public static void main(String[] args) {
         int TEST_ARRAY_LENGTH = 1000000;
         int MIN_RANDOM_NUMBER = 0;
-        int MAX_RANDOM_NUMBER = 10;
+        int MAX_RANDOM_NUMBER = 1000;
         int[] array = new int[TEST_ARRAY_LENGTH];
         for (int i = 0; i < TEST_ARRAY_LENGTH; i++) {
             array[i] = new Random().nextInt(MAX_RANDOM_NUMBER - MIN_RANDOM_NUMBER + 1) + MIN_RANDOM_NUMBER;
