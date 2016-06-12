@@ -3,8 +3,10 @@ package com.test.problems;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -19,24 +21,29 @@ public class MovingAverage {
     private final BufferedReader reader;
     private final ExecutorService executor;
     private final AtomicBoolean backgroundProcessStarted = new AtomicBoolean(false);
-    private Future backgroundProcessFuture;
+    private Set<Future> backgroundProcessFutures = new HashSet<>();
 
     MovingAverage(int numberOfItemsToKeep, BufferedReader reader) {
         this.numberOfItemsToKeep = numberOfItemsToKeep;
         this.inputQueue = new LinkedBlockingQueue<>();
         this.reader = reader;
-        this.executor = Executors.newSingleThreadExecutor();
+        this.executor = Executors.newFixedThreadPool(10);
     }
 
     void startProcessingAverage() {
         System.out.println("Starting background process.");
-        this.backgroundProcessFuture = this.executor.submit(() -> processQueue());
+        // Submit 10 tasks, but only one of them should succeed in running.
+        for (int i = 0; i < 5; i++) {
+            this.backgroundProcessFutures.add(this.executor.submit(() -> processQueue()));
+        }
         System.out.println("Background process started.");
     }
 
     void stopProcessingAverage() {
         System.out.println("Stopping background process.");
-        this.backgroundProcessFuture.cancel(true);
+        for (Future future : this.backgroundProcessFutures) {
+            future.cancel(true);
+        }
         this.executor.shutdown();
         System.out.println("Background process is stopped.");
     }
@@ -98,7 +105,7 @@ public class MovingAverage {
 
     public static void main(String[] args) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        MovingAverage movingAverage = new MovingAverage(10, reader);
+        MovingAverage movingAverage = new MovingAverage(3, reader);
         movingAverage.startProcessingAverage();
         movingAverage.processInput();
     }
