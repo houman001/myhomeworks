@@ -30,10 +30,6 @@ public class MovingAverage {
 
     void startProcessingAverage() {
         System.out.println("Starting background process.");
-        if (!backgroundProcessStarted.compareAndSet(false, true)) {
-            System.err.println("Background processing is already started!");
-            return;
-        }
         this.backgroundProcessFuture = this.executor.submit(() -> processQueue());
         System.out.println("Background process started.");
     }
@@ -46,6 +42,11 @@ public class MovingAverage {
     }
 
     void processQueue() {
+        // Allow only one thread to run.
+        if (!backgroundProcessStarted.compareAndSet(false, true)) {
+            System.err.println("Background processing is already started!");
+            return;
+        }
         Queue<Integer> lastNumbers = new LinkedList<>();
         double sum = 0;
         try {
