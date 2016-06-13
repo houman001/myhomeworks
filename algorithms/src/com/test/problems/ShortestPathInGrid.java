@@ -1,9 +1,13 @@
 package com.test.problems;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public class ShortestPathInGrid {
+    private static final int INFINITY = 999999;
+
     private static class Point {
         int row;
         int column;
@@ -12,9 +16,33 @@ public class ShortestPathInGrid {
             this.row = row;
             this.column = column;
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+
+            Point point = (Point) o;
+
+            if (row != point.row) {
+                return false;
+            }
+            return column == point.column;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = row;
+            result = 31 * result + column;
+            return result;
+        }
     }
 
-    private static int findShortestPathLength(char[][] grid, Point source, Point destination) {
+    private static Map<Point, Integer> findShortestPath(char[][] grid, Point source, Point destination) {
         int rows = grid.length;
         if (rows < 1) {
             throw new RuntimeException("Invalid grid.");
@@ -44,17 +72,38 @@ public class ShortestPathInGrid {
         int[][] weights = new int[rows][columns];
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
-                weights[i][j] = Integer.MAX_VALUE;
+                weights[i][j] = INFINITY;
             }
         }
         weights[source.row][source.column] = 0;
         processNode(grid, weights, source);
         printWeights(weights);
-        return weights[destination.row][destination.column];
+        if (weights[destination.row][destination.column] == INFINITY) {
+            throw new RuntimeException("No solution!");
+        }
+        Map<Point, Integer> path = new HashMap<>();
+        Point point = destination;
+        while (true) {
+            if (point == null) {
+                throw new RuntimeException("Couldn't backtrack!");
+            }
+            path.put(point, weights[point.row][point.column]);
+            if (point.equals(source)) {
+                break;
+            }
+            Set<Point> neighbors = getNeighbors(grid, point);
+            for (Point neighbor : neighbors) {
+                if (weights[neighbor.row][neighbor.column] < weights[point.row][point.column]) {
+                    point = neighbor;
+                    break;
+                }
+            }
+        }
+        return path;
     }
 
     private static void processNode(char[][] grid, int[][] weights, Point point) {
-        System.out.println("Processing point " + point.row + ":" + point.column);
+        // System.out.println("Processing point " + point.row + ":" + point.column);
         Set<Point> neighbors = getNeighbors(grid, point);
         Set<Point> neighborsToProcess = new HashSet<>();
         for (Point neighbor : neighbors) {
@@ -74,7 +123,7 @@ public class ShortestPathInGrid {
         Set<Point> neighbors = new HashSet<>();
         for (int i = -1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {
-                if (i == 0 && j == 0) {
+                if ((i + j) % 2 == 0) {
                     continue;
                 }
                 if (isValid(grid, row + i, column + j)) {
@@ -95,7 +144,22 @@ public class ShortestPathInGrid {
         System.out.println("Weights:");
         for (int[] row : weights) {
             for (int entry : row) {
-                System.out.print("\t" + entry);
+                System.out.print("\t\t" + String.format("%6s", entry));
+            }
+            System.out.println();
+        }
+    }
+
+    private static void printPath(char[][] grid, Map<Point, Integer> path) {
+        System.out.println("Path:");
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[i].length; j++) {
+                Point point = new Point(i, j);
+                if (path.containsKey(point)) {
+                    System.out.print("\t\t" + String.format("%6s", path.get(point)));
+                } else {
+                    System.out.print("\t\t" + String.format("%6s", grid[i][j]));
+                }
             }
             System.out.println();
         }
@@ -103,13 +167,16 @@ public class ShortestPathInGrid {
 
     public static void main(String[] args) {
         char[][] grid = new char[][] {
-                { '.', '.', '.', '.' },
-                { '*', '*', '.', '*' },
-                { '*', '.', '.', '*' },
-                { '.', '.', '*', '*' },
-                { '*', '.', '.', '.' }
+                { '.', '.', '.', '.', '*', '.', '.', '.', '.', '.' },
+                { '*', '.', '*', '*', '.', '.', '*', '*', '*', '.' },
+                { '*', '.', '.', '.', '.', '*', '.', '.', '.', '.' },
+                { '.', '.', '*', '.', '*', '.', '.', '*', '*', '.' },
+                { '.', '*', '.', '*', '.', '.', '*', '*', '.', '.' },
+                { '.', '.', '*', '.', '*', '.', '.', '*', '*', '*' },
+                { '*', '.', '*', '.', '.', '.', '.', '.', '.', '.' }
         };
-        int length = findShortestPathLength(grid, new Point(0, 0), new Point(4, 3));
-        System.out.println("Shortest path is " + length);
+        printPath(grid, new HashMap<>());
+        Map<Point, Integer> path = findShortestPath(grid, new Point(0, 0), new Point(6, 9));
+        printPath(grid, path);
     }
 }
