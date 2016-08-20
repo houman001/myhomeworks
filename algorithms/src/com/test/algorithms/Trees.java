@@ -1,7 +1,8 @@
 package com.test.algorithms;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -11,37 +12,45 @@ import java.util.Stack;
 import java.util.stream.Collectors;
 
 public class Trees {
-    interface Node {
-        int getValue();
+    public interface Node<T> {
+        T getValue();
 
-        List<Node> getChildren();
+        Collection<Node<T>> getChildren();
     }
 
-    static class TreeNode implements Node {
-        public int value;
-        public List<Node> children = new ArrayList<Node>();
+    public interface NodeVisitor<T> {
+        void visit(Node<T> node);
+    }
 
-        public TreeNode(int value) {
+    public static class TreeNode<T> implements Node<T> {
+        T value;
+        List<Node<T>> children = new ArrayList<>();
+
+        public TreeNode(T value) {
             this.value = value;
         }
 
-        public TreeNode addChild(int value) {
-            TreeNode child = new TreeNode(value);
+        TreeNode<T> addChild(T value) {
+            TreeNode<T> child = new TreeNode<>(value);
+            return addChild(child);
+        }
+
+        public TreeNode<T> addChild(TreeNode<T> child) {
             children.add(child);
             return child;
         }
 
-        public int getValue() {
+        public T getValue() {
             return value;
         }
 
-        public List<Node> getChildren() {
+        public List<Node<T>> getChildren() {
             return children;
         }
 
         @Override
         public int hashCode() {
-            return Integer.valueOf(value).hashCode();
+            return value.hashCode();
         }
 
         @Override
@@ -49,7 +58,7 @@ public class Trees {
             if (o == null || !(o instanceof TreeNode)) {
                 return false;
             }
-            return Integer.valueOf(value).equals(((TreeNode) o).getValue());
+            return value.equals(((TreeNode) o).getValue());
         }
 
         @Override
@@ -58,31 +67,31 @@ public class Trees {
         }
     }
 
-    static class BinaryTreeNode implements Node {
-        public int value;
-        BinaryTreeNode left;
-        BinaryTreeNode right;
+    static class BinaryTreeNode<T> implements Node<T> {
+        public T value;
+        BinaryTreeNode<T> left;
+        BinaryTreeNode<T> right;
 
-        public BinaryTreeNode(int value) {
+        public BinaryTreeNode(T value) {
             this.value = value;
         }
 
-        public BinaryTreeNode setLeft(int value) {
-            left = new BinaryTreeNode(value);
+        public BinaryTreeNode<T> setLeft(T value) {
+            left = new BinaryTreeNode<>(value);
             return left;
         }
 
-        public BinaryTreeNode setRight(int value) {
-            right = new BinaryTreeNode(value);
+        public BinaryTreeNode<T> setRight(T value) {
+            right = new BinaryTreeNode<>(value);
             return right;
         }
 
-        public int getValue() {
+        public T getValue() {
             return value;
         }
 
-        public List<Node> getChildren() {
-            List<Node> children = new ArrayList<Node>();
+        public List<Node<T>> getChildren() {
+            List<Node<T>> children = new ArrayList<>();
             if (left != null) {
                 children.add(left);
             }
@@ -94,7 +103,7 @@ public class Trees {
 
         @Override
         public int hashCode() {
-            return Integer.valueOf(value).hashCode();
+            return value.hashCode();
         }
 
         @Override
@@ -102,7 +111,7 @@ public class Trees {
             if (o == null || !(o instanceof BinaryTreeNode)) {
                 return false;
             }
-            return Integer.valueOf(value).equals(((BinaryTreeNode) o).getValue());
+            return value.equals(((BinaryTreeNode) o).getValue());
         }
 
         @Override
@@ -111,33 +120,33 @@ public class Trees {
         }
     }
 
-    private static Node generateBinaryTree() {
-        BinaryTreeNode root = new BinaryTreeNode(10);
-        BinaryTreeNode node5 = root.setLeft(5);
-        BinaryTreeNode node14 = root.setRight(14);
-        BinaryTreeNode node2 = node5.setLeft(2);
-        BinaryTreeNode node8 = node5.setRight(8);
-        BinaryTreeNode node11 = node14.setLeft(11);
-        BinaryTreeNode node16 = node14.setRight(16);
-        BinaryTreeNode node4 = node2.setRight(4);
-        BinaryTreeNode node6 = node8.setLeft(6);
-        BinaryTreeNode node9 = node8.setRight(9);
-        BinaryTreeNode node15 = node16.setLeft(15);
-        BinaryTreeNode node19 = node16.setRight(19);
-        BinaryTreeNode node7 = node6.setRight(7);
+    private static Node<Integer> generateBinaryTree() {
+        BinaryTreeNode<Integer> root = new BinaryTreeNode<>(10);
+        BinaryTreeNode<Integer> node5 = root.setLeft(5);
+        BinaryTreeNode<Integer> node14 = root.setRight(14);
+        BinaryTreeNode<Integer> node2 = node5.setLeft(2);
+        BinaryTreeNode<Integer> node8 = node5.setRight(8);
+        BinaryTreeNode<Integer> node11 = node14.setLeft(11);
+        BinaryTreeNode<Integer> node16 = node14.setRight(16);
+        BinaryTreeNode<Integer> node4 = node2.setRight(4);
+        BinaryTreeNode<Integer> node6 = node8.setLeft(6);
+        BinaryTreeNode<Integer> node9 = node8.setRight(9);
+        BinaryTreeNode<Integer> node15 = node16.setLeft(15);
+        BinaryTreeNode<Integer> node19 = node16.setRight(19);
+        BinaryTreeNode<Integer> node7 = node6.setRight(7);
         return root;
     }
 
-    private static Node generateTree() {
-        TreeNode root = new TreeNode(5);
-        TreeNode node7 = root.addChild(7);
-        TreeNode node4 = root.addChild(4);
-        TreeNode node3 = root.addChild(3);
-        TreeNode node8 = node7.addChild(8);
-        TreeNode node2 = node4.addChild(2);
-        TreeNode node1 = node4.addChild(1);
-        TreeNode node9 = node1.addChild(9);
-        TreeNode node6 = node3.addChild(6);
+    private static Node<Integer> generateTree() {
+        TreeNode<Integer> root = new TreeNode<>(5);
+        TreeNode<Integer> node7 = root.addChild(7);
+        TreeNode<Integer> node4 = root.addChild(4);
+        TreeNode<Integer> node3 = root.addChild(3);
+        TreeNode<Integer> node8 = node7.addChild(8);
+        TreeNode<Integer> node2 = node4.addChild(2);
+        TreeNode<Integer> node1 = node4.addChild(1);
+        TreeNode<Integer> node9 = node1.addChild(9);
+        TreeNode<Integer> node6 = node3.addChild(6);
         return root;
     }
 
@@ -145,17 +154,17 @@ public class Trees {
         PRE_ORDER, POST_ORDER
     }
 
-    private static void traverseDFS(Node root, TraverseOrder order) {
+    public static <T> void traverseDFS(Node<T> root, TraverseOrder order) {
         System.out.print("DFS(" + order + "): ");
-        Set<Node> visitedSet = new HashSet<>();
-        Set<Node> exploredSet = new HashSet<>();
-        Stack<Node> stack = new Stack<>();
+        Set<Node<T>> visitedSet = new HashSet<>();
+        Set<Node<T>> exploredSet = new HashSet<>();
+        Stack<Node<T>> stack = new Stack<>();
         stack.push(root);
         addNode(visitedSet, root, order == TraverseOrder.PRE_ORDER);
         while (!stack.isEmpty()) {
-            Node node = stack.peek();
+            Node<T> node = stack.peek();
             boolean anyNodeAdded = false;
-            for (Node child : node.getChildren()) {
+            for (Node<T> child : node.getChildren()) {
                 if (!visitedSet.contains(child)) {
                     addNode(visitedSet, child, order == TraverseOrder.PRE_ORDER);
                     stack.push(child);
@@ -171,68 +180,72 @@ public class Trees {
         System.out.println("");
     }
 
-    private static void traverseBFS(Node root) {
-        System.out.print("BFS: ");
-        Queue<Node> queue = new LinkedList<>();
+    public static <T> void traverseBFS(Node<T> root, NodeVisitor<T> visitor) {
+        System.out.println("BFS");
+        Queue<Node<T>> queue = new LinkedList<>();
         queue.offer(root);
         while (!queue.isEmpty()) {
-            Node node = queue.poll();
-            for (Node child : node.getChildren()) {
+            Node<T> node = queue.poll();
+            for (Node<T> child : node.getChildren()) {
                 queue.offer(child);
             }
-            System.out.print("" + node + " ");
+            visitor.visit(node);
         }
-        System.out.println("");
     }
 
-    private static int findLowestCommonAncestor(Node root, int val1, int val2) {
+    public static <T> T findLowestCommonAncestor(Node<T> root, T val1, T val2) {
         // System.out.println("Finding LCA of " + val1 + " and " + val2);
-        Set<Node> visitedSet = new HashSet<>();
-        Stack<Node> stack = new Stack<>();
-        List<Node> path1 = Arrays.asList(root);
-        List<Node> path2 = Arrays.asList(root);
+        Set<Node<T>> visitedSet = new HashSet<>();
+        Stack<Node<T>> stack = new Stack<>();
+        List<Node<T>> path1 = Collections.singletonList(root);
+        List<Node<T>> path2 = Collections.singletonList(root);
         stack.push(root);
         while (!stack.isEmpty()) {
-            Node node = stack.peek();
+            Node<T> node = stack.peek();
             if (visitedSet.contains(node)) {
                 // We have seen this node before. It's time to process it and get it out of the stack.
                 stack.pop();
             } else {
                 visitedSet.add(node);
-                for (Node child : node.getChildren()) {
+                for (Node<T> child : node.getChildren()) {
                     stack.push(child);
-                    if (child.getValue() == val1) {
+                    if (child.getValue().equals(val1)) {
                         path1 = stack.stream().filter(visitedSet::contains).collect(Collectors.toList());
-                    } else if (child.getValue() == val2) {
+                        path1.add(child);
+                    } else if (child.getValue().equals(val2)) {
                         path2 = stack.stream().filter(visitedSet::contains).collect(Collectors.toList());
+                        path2.add(child);
                     }
                 }
             }
         }
         // System.out.println("Path to " + val1 + ": " + path1.toString());
         // System.out.println("Path to " + val2 + ": " + path2.toString());
-        int lca = root.getValue();
+        T lca = root.getValue();
         for (int i = 0; i < Math.min(path1.size(), path2.size()); i++) {
-            if (!path1.get(i).equals(path2.get(i)))
+            if (!path1.get(i).equals(path2.get(i))) {
                 break;
+            }
             lca = path1.get(i).getValue();
         }
         System.out.println("LCA of " + val1 + " and " + val2 + " is: " + lca);
         return lca;
     }
 
-    private static void addNode(Set<Node> set, Node node, boolean print) {
+    private static <T> void addNode(Set<Node<T>> set, Node<T> node, boolean print) {
         set.add(node);
         if (print) {
             System.out.print("" + node + " ");
         }
     }
 
+    private static NodeVisitor<Integer> PRINT_NODE_VISITOR = node -> System.out.print(node + " ");
+
     public static void main(String[] args) {
-        Node binaryTree = generateBinaryTree();
+        Node<Integer> binaryTree = generateBinaryTree();
         traverseDFS(binaryTree, TraverseOrder.PRE_ORDER);
         traverseDFS(binaryTree, TraverseOrder.POST_ORDER);
-        traverseBFS(binaryTree);
+        traverseBFS(binaryTree, PRINT_NODE_VISITOR);
         if (findLowestCommonAncestor(binaryTree, 10, 6) != 10) {
             System.err.println("Invalid lowest common ancestor for 10 and 6.");
         }
@@ -248,6 +261,6 @@ public class Trees {
         Node tree = generateTree();
         traverseDFS(tree, TraverseOrder.PRE_ORDER);
         traverseDFS(tree, TraverseOrder.POST_ORDER);
-        traverseBFS(tree);
+        traverseBFS(tree, PRINT_NODE_VISITOR);
     }
 }
