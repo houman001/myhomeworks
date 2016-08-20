@@ -210,11 +210,11 @@ public class Trees {
                 for (Node<T> child : node.getChildren()) {
                     stack.push(child);
                     if (child.getValue().equals(val1)) {
-                        path1 = stack.stream().filter(visitedSet::contains).collect(Collectors.toList());
-                        path1.add(child);
+                        path1 = stack.stream().filter(n -> visitedSet.contains(n) || n.equals(child)).collect(
+                                Collectors.toList());
                     } else if (child.getValue().equals(val2)) {
-                        path2 = stack.stream().filter(visitedSet::contains).collect(Collectors.toList());
-                        path2.add(child);
+                        path2 = stack.stream().filter(n -> visitedSet.contains(n) || n.equals(child)).collect(
+                                Collectors.toList());
                     }
                 }
             }
