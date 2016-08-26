@@ -89,7 +89,7 @@ public class MaxSumInArray {
         int endingMaxSubSum = Integer.MIN_VALUE;
         for (int i = 0; i < array.length; i++) {
             int currentItem = array[i];
-            if (endingMaxSubSum <= 0) {
+            if (endingMaxSubSum <= 0 && endingMaxSubSum < currentItem) {
                 endingMaxSubStartingIndex = i;
                 endingMaxSubSum = currentItem;
             } else {
